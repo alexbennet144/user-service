@@ -31,6 +31,10 @@ public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationTo
                     authorities.add(new SimpleGrantedAuthority("ROLE_" + g)));
         }
 
-        return new JwtAuthenticationToken(jwt, authorities, jwt.getSubject());
+        return new JwtAuthenticationToken(jwt, 
+        		                          authorities, 
+        		                          jwt.getClaim("client_id") != null ?
+        		                                             jwt.getClaim("client_id"):
+                                                             jwt.getSubject());
     }
 }

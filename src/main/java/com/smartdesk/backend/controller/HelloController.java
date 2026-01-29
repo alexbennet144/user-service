@@ -1,24 +1,18 @@
  package com.smartdesk.backend.controller;
 
-import com.smartdesk.backend.model.HelloResponse;
-import com.smartdesk.backend.service.HelloService;
-import lombok.RequiredArgsConstructor;
-
 import java.security.Principal;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-/**
- * Simple controller to validate the application is running.
- * Replace / extend with your real REST endpoints.
- */
-import com.smartdesk.backend.model.HelloResponse;
-import com.smartdesk.backend.service.HelloService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.smartdesk.backend.model.HelloResponse;
+import com.smartdesk.backend.service.HelloService;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/hello")

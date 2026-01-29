@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  user-service:
+    image: alexbennet021121/user-service:${USER_SERVICE_TAG}
+    ports:
+      - "8081:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: ${RUNTIME_ENV}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      TZ: Asia/Kolkata
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

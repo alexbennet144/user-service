@@ -1,37 +1,25 @@
 spring:
   application:
     name: smartdesk-backend
+
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: postgres
-    password: 2850
     driver-class-name: org.postgresql.Driver
 
-    hikari:
-      pool-name: UserServiceHikariPool
-      maximum-pool-size: 10
-      minimum-idle: 2
-      idle-timeout: 30000
-      max-lifetime: 1800000
-      connection-timeout: 30000
-    
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
   flyway:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: true
     validate-on-migrate: true
 
-  jpa:
-    hibernate:
-      ddl-auto: validate
-
   security:
     oauth2:
       resourceserver:
         jwt:
           issuer-uri: https://cognito-idp.${cognito.region}.amazonaws.com/${cognito.userPoolId}
-          # jwk-set-uri is inferred from issuer-uri by Spring
-          # jwk-set-uri: https://cognito-idp.${cognito.region}.amazonaws.com/${cognito.userPoolId}/.well-known/jwks.json
 
 server:
   port: 8080
@@ -42,16 +30,6 @@ management:
       exposure:
         include: health,info
 
-# Cognito / OIDC settings
-cognito:
-  region: us-east-1
-  userPoolId: us-east-1_TOZbkz8xq
-
-  # Optional: if you created a resource server with an identifier (aud), use it as audience.
-  # If not, use the App client id (client_id), which is usually the "aud" for access tokens.
-  audience: 1fmj0q99hsrk25s8llprks1scp
-
 logging:
   level:
     org.springframework.security: INFO
-
