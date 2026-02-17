@@ -1,30 +1,76 @@
 version: "3.9"
 
 services:
+
+  # -----------------------------
+  # USER SERVICE
+  # -----------------------------
   user-service:
     image: alexbennet021121/user-service:${USER_SERVICE_TAG}
+    container_name: user-service
     ports:
       - "8081:8080"
     environment:
       SPRING_PROFILES_ACTIVE: ${RUNTIME_ENV}
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
-      DB_NAME: ${DB_NAME}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: user-postgres
+      DB_PORT: 5432
+      DB_NAME: ${USER_DB_NAME}
+      DB_USER: ${USER_DB_USER}
+      DB_PASSWORD: ${USER_DB_PASSWORD}
       TZ: Asia/Kolkata
+    depends_on:
+      - user-postgres
 
-  postgres:
+  # -----------------------------
+  # USER SERVICE DATABASE
+  # -----------------------------
+  user-postgres:
     image: postgres:15
-    container_name: postgres
+    container_name: user-postgres
     ports:
       - "5433:5432"
     environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${USER_DB_NAME}
+      POSTGRES_USER: ${USER_DB_USER}
+      POSTGRES_PASSWORD: ${USER_DB_PASSWORD}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - user_postgres_data:/var/lib/postgresql/data
+
+  # -----------------------------
+  # HR SERVICE
+  # -----------------------------
+  hr-service:
+    image: alexbennet021121/hr-service:${HR_SERVICE_TAG}
+    container_name: hr-service
+    ports:
+      - "8082:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: ${RUNTIME_ENV}
+      DB_HOST: hr-postgres
+      DB_PORT: 5432
+      DB_NAME: ${HR_DB_NAME}
+      DB_USER: ${HR_DB_USER}
+      DB_PASSWORD: ${HR_DB_PASSWORD}
+      TZ: Asia/Kolkata
+    depends_on:
+      - hr-postgres
+
+  # -----------------------------
+  # HR SERVICE DATABASE
+  # -----------------------------
+  hr-postgres:
+    image: postgres:15
+    container_name: hr-postgres
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_DB: ${HR_DB_NAME}
+      POSTGRES_USER: ${HR_DB_USER}
+      POSTGRES_PASSWORD: ${HR_DB_PASSWORD}
+    volumes:
+      - hr_postgres_data:/var/lib/postgresql/data
+
 
 volumes:
-  postgres_data:
+  user_postgres_data:
+  hr_postgres_data:
