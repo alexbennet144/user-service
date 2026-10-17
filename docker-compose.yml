@@ -1,6 +1,46 @@
-version: "3.9"
 
 services:
+
+  # =====================================================
+  # KAFKA (Apache - KRaft mode, no Zookeeper)
+  # =====================================================
+  kafka:
+    image: apache/kafka:4.1.1
+    container_name: kafka
+    ports:
+      - "9092:9092"   # External
+      - "9093:9093"   # Internal
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9094
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+
+      KAFKA_LISTENERS: PLAINTEXT://:9092,INTERNAL://:9093,CONTROLLER://:9094
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,INTERNAL://kafka:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,INTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_NUM_PARTITIONS: 3
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+
+  # =====================================================
+  # KAFKA UI (Optional but Highly Recommended)
+  # =====================================================
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "8090:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9093
+    depends_on:
+      - kafka
 
   # -----------------------------
   # USER SERVICE
@@ -10,6 +50,7 @@ services:
     container_name: user-service
     ports:
       - "8081:8080"
+    pull_policy: always
     environment:
       SPRING_PROFILES_ACTIVE: ${RUNTIME_ENV}
       DB_HOST: user-postgres
@@ -17,9 +58,14 @@ services:
       DB_NAME: ${USER_DB_NAME}
       DB_USER: ${USER_DB_USER}
       DB_PASSWORD: ${USER_DB_PASSWORD}
+
+      # Kafka
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9093
+
       TZ: Asia/Kolkata
     depends_on:
       - user-postgres
+      - kafka
 
   # -----------------------------
   # USER SERVICE DATABASE
@@ -42,6 +88,7 @@ services:
   hr-service:
     image: alexbennet021121/hr-service:${HR_SERVICE_TAG}
     container_name: hr-service
+    pull_policy: always
     ports:
       - "8082:8080"
     environment:
@@ -51,9 +98,14 @@ services:
       DB_NAME: ${HR_DB_NAME}
       DB_USER: ${HR_DB_USER}
       DB_PASSWORD: ${HR_DB_PASSWORD}
+
+      # Kafka
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9093
+
       TZ: Asia/Kolkata
     depends_on:
       - hr-postgres
+      - kafka
 
   # -----------------------------
   # HR SERVICE DATABASE
@@ -70,7 +122,7 @@ services:
     volumes:
       - hr_postgres_data:/var/lib/postgresql/data
 
-
 volumes:
   user_postgres_data:
   hr_postgres_data:
+  kafka_data:

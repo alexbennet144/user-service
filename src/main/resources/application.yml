@@ -8,6 +8,10 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: Asia/Kolkata
 
   flyway:
     enabled: true
@@ -20,6 +24,23 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: https://cognito-idp.${cognito.region}.amazonaws.com/${cognito.userPoolId}
+  kafka:
+    producer:
+      acks: all
+      retries: 2147483647
+      properties:
+        enable.idempotence: true
+        delivery.timeout.ms: 120000
+        retry.backoff.ms: 1000
+    consumer:
+      group-id: user-service-group
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        "spring.deserializer.value.delegate.class": org.springframework.kafka.support.serializer.JsonDeserializer
+        "spring.json.trusted.packages": "*"
+        "spring.json.value.default.type": com.yourorg.core.kafka.event.HrUserCreatedEvent
 
 server:
   port: 8080
@@ -37,3 +58,24 @@ logging:
 # Default fallback (can be overridden via profile or env variable)
 hr:
   base-url: ${HR_BASE_URL:http://localhost:8082}
+
+spring:
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      hr-service:
+        failureRateThreshold: 50
+        slidingWindowSize: 20
+        waitDurationInOpenState: 30s
+        permittedNumberOfCallsInHalfOpenState: 5
+  timelimiter:
+    instances:
+      hr-service:
+        timeoutDuration: 3s
+  
+

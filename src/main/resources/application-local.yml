@@ -1,8 +1,11 @@
+server:
+  port: 8085
+
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/${USER_DB_NAME}
-    username: ${USER_DB_USER}
-    password: ${USER_DB_PASSWORD}
+    url: jdbc:postgresql://localhost:5433/${USER_DB_NAME:user_db}?options=-c%20timezone=Asia/Kolkata
+    username: ${USER_DB_USER:user-service}
+    password: ${USER_DB_PASSWORD:2850}
 
     hikari:
       pool-name: UserServiceHikariPool
@@ -10,8 +13,11 @@ spring:
       minimum-idle: 2
       idle-timeout: 30000
       max-lifetime: 1800000
-      connection-timeout: 30000
-
+      connection-timeout: 30000   
+      
+  kafka:
+    bootstrap-servers: localhost:9092
+    
 cognito:
   region: us-east-1
   userPoolId: us-east-1_TOZbkz8xq
@@ -19,3 +25,9 @@ cognito:
 
 hr:
   base-url: ${HR_BASE_URL:http://localhost:8082}
+  
+logging:
+  level:
+    "[org.springframework.kafka]": DEBUG
+    "[org.springframework.kafka.listener]": DEBUG
+    "[org.springframework.kafka.support.serializer]": DEBUG

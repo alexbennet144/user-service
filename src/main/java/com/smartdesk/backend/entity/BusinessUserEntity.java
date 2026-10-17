@@ -2,8 +2,8 @@ package com.smartdesk.backend.entity;
 
 import java.time.Instant;
 
-import com.smartdesk.backend.constant.enums.UserStatus;
-import com.smartdesk.backend.constant.enums.UserType;
+import com.yourorg.core.constant.enums.UserStatus;
+import com.yourorg.core.constant.enums.UserType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

@@ -20,17 +20,18 @@ public class UserRoleEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private BusinessUserEntity user;
+    private UserEntity user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id", nullable = false)
     private RoleEntity role;
 
-    @Column(nullable = false)
+    @Column(name = "assigned_by", nullable = false)
     private UUID assignedBy;
 
-    @Column(nullable = false)
+    @Column(name = "assigned_at", nullable = false)
     private Instant assignedAt;
 
+    @Column(name = "revoked_at")
     private Instant revokedAt;
 }

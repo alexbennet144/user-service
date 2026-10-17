@@ -12,5 +12,13 @@ spring:
       max-lifetime: 1800000
       connection-timeout: 30000
 
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+
+cognito:
+  region: us-east-1
+  userPoolId: us-east-1_TOZbkz8xq
+  audience: 1fmj0q99hsrk25s8llprks1scp
+
 hr:
   base-url: ${HR_BASE_URL:http://hr-service:8080}

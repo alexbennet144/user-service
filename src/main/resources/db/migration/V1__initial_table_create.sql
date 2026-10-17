@@ -23,16 +23,17 @@ CREATE TABLE tenant (
 CREATE TABLE business_user (
     id UUID PRIMARY KEY,
     tenant_id UUID NOT NULL,
-    employee_id VARCHAR(100) NOT NULL,
+    employee_id VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     display_name VARCHAR(255),
-    status VARCHAR(20) NOT NULL,
-    user_type VARCHAR(20) NOT NULL,
-    created_at TIMESTAMP NOT NULL,
+    status VARCHAR(255) NOT NULL,
+    user_type VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP,
     updated_at TIMESTAMP,
     terminated_at TIMESTAMP,
 
     CONSTRAINT uk_business_user_employee_id UNIQUE (employee_id),
+    CONSTRAINT uk_business_user_email UNIQUE (email),
     CONSTRAINT fk_business_user_tenant
         FOREIGN KEY (tenant_id)
         REFERENCES tenant (id)
@@ -50,7 +51,7 @@ CREATE INDEX idx_business_user_email
 CREATE TABLE role (
     id UUID PRIMARY KEY,
     tenant_id UUID NOT NULL,
-    role_code VARCHAR(100) NOT NULL,
+    role_code VARCHAR(255) NOT NULL,
     description VARCHAR(255),
     is_system_role BOOLEAN NOT NULL,
     created_at TIMESTAMP NOT NULL,
@@ -67,11 +68,11 @@ CREATE TABLE role (
 -- =========================================================
 CREATE TABLE permission (
     id UUID PRIMARY KEY,
-    permission_code VARCHAR(150) NOT NULL,
-    resource VARCHAR(100) NOT NULL,
-    action VARCHAR(100) NOT NULL,
+    permission_code VARCHAR(255) NOT NULL,
+    resource VARCHAR(255) NOT NULL,
+    action VARCHAR(255) NOT NULL,
     description VARCHAR(255),
-    created_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP,
     updated_at TIMESTAMP,
 
     CONSTRAINT uk_permission_code UNIQUE (permission_code)
@@ -84,7 +85,7 @@ CREATE TABLE role_permission (
     id UUID PRIMARY KEY,
     role_id UUID NOT NULL,
     permission_id UUID NOT NULL,
-    created_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP,
     updated_at TIMESTAMP,
 
     CONSTRAINT uk_role_permission UNIQUE (role_id, permission_id),
@@ -112,7 +113,7 @@ CREATE TABLE user_role (
     assigned_by UUID NOT NULL,
     assigned_at TIMESTAMP NOT NULL,
     revoked_at TIMESTAMP,
-    created_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP,
     updated_at TIMESTAMP,
 
     CONSTRAINT fk_user_role_user
@@ -160,14 +161,14 @@ CREATE INDEX idx_delegation_user
 -- =========================================================
 CREATE TABLE hr_provisioning_event (
     id UUID PRIMARY KEY,
-    external_event_id VARCHAR(100) NOT NULL,
-    employee_id VARCHAR(100) NOT NULL,
-    event_type VARCHAR(20) NOT NULL,
-    status VARCHAR(20) NOT NULL,
-    received_at TIMESTAMP NOT NULL,
+    external_event_id VARCHAR(255),
+    employee_id VARCHAR(255),
+    event_type VARCHAR(255),
+    status VARCHAR(255),
+    received_at TIMESTAMP,
     processed_at TIMESTAMP,
     error_message TEXT,
-    created_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP,
     updated_at TIMESTAMP
 );
 
@@ -176,6 +177,14 @@ CREATE INDEX idx_hr_event_employee
 
 CREATE INDEX idx_hr_event_status
     ON hr_provisioning_event (status);
+
+-- =========================================================
+-- PROCESSED_EVENT
+-- =========================================================
+CREATE TABLE processed_event (
+    id UUID PRIMARY KEY,
+    processed_at TIMESTAMP NOT NULL
+);
 
 -- =========================================================
 -- AUDIT_OUTBOX (OUTBOX PATTERN)
